@@ -24,7 +24,7 @@ fn build_bindings(cwd: &Path) {
 
     eprintln!("{}", cwd.display());
 
-    let builder = bindgen::Builder::default()
+    let mut builder = bindgen::Builder::default()
         .clang_arg(format!("--include-directory={}", include_dir.display()))
         .clang_arg("-DXED_ENCODER")
         .clang_arg("-DXED_DECODER")
@@ -37,6 +37,10 @@ fn build_bindings(cwd: &Path) {
         .derive_copy(true)
         .derive_debug(true)
         .prepend_enum_name(false);
+
+    if cfg!(feature = "enc2") {
+        builder = builder.clang_arg("-DXED_ENC2");
+    }
 
     builder.dump_preprocessed_input().unwrap();
 
@@ -147,6 +151,10 @@ fn main() {
         cmd.arg("--opt=0");
     }
 
+    if cfg!(feature = "enc2") {
+        cmd.arg("--enc2");
+    }
+
     cmd.arg("install").current_dir(&build_dir);
 
     eprintln!("XED build command: {:?}", cmd);
@@ -161,6 +169,13 @@ fn main() {
 
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=static=xed");
+
+    if cfg!(feature = "enc2") {
+        println!("cargo:rustc-link-lib=static=xed-enc2-m32-a32");
+        println!("cargo:rustc-link-lib=static=xed-enc2-m64-a64");
+        println!("cargo:rustc-link-lib=static=xed-chk-enc2-m32-a32");
+        println!("cargo:rustc-link-lib=static=xed-chk-enc2-m64-a64");
+    }
 
     // Generate bindings
     build_bindings(&cwd);

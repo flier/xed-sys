@@ -85,6 +85,10 @@ fn main() {
         cmd.arg("--opt=0");
     }
 
+    if cfg!(feature = "enc2") {
+        cmd.arg("--enc2");
+    }
+    
     cmd.arg("install").current_dir(&build_dir);
 
     eprintln!("XED build command: {:?}", cmd);

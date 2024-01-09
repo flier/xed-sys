@@ -8,11 +8,20 @@ edition = "2018"
 repository = "https://github.com/rust-xed/xed-sys"
 readme = "README.md"
 keywords = ["xed", "intel", "x86", "x86_64"]
-categories = ["encoding", "external-ffi-bindings", "hardware-support", "parsing"]
+categories = [
+  "encoding",
+  "external-ffi-bindings",
+  "hardware-support",
+  "parsing",
+]
 
 [badges]
-appveyor  = { repository = "rust-xed/xed-sys" }
+appveyor = { repository = "rust-xed/xed-sys" }
 travis-ci = { repository = "rust-xed/xed-sys" }
+
+[features]
+default = []
+enc2 = []
 
 [dependencies]
 
@@ -21,7 +30,4 @@ bindgen = "0.69"
 target-lexicon = "0.12"
 
 [workspace]
-members = [
-  ".",
-  "build-tools"
-]
+members = [".", "build-tools"]
