@@ -132,17 +132,27 @@ fn main() {
         .arg("-B")
         .arg(&mfile_path)
         .arg(format!("--jobs={}", num_jobs))
-        .arg("--silent")
-        .arg("--static-stripped")
-        .arg("--extra-ccflags=-fPIC")
-        .arg("--no-werror")
-        .arg(format!(
-            "--host-cpu={}",
-            Triple::from_str(&target)
-                .expect("TARGET was not a valid target triple")
-                .architecture
-        ))
-        .arg(format!("--install-dir={}", install_dir.display()))
+        .arg("--silent");
+
+    if cfg!(target_family = "windows") {
+        if let Ok(msvs_version) = env::var("MSVS_VERSION") {
+            cmd.arg("--setup-msvs")
+                .arg("--msvs-version")
+                .arg(msvs_version);
+        }
+    } else {
+        cmd.arg("--static-stripped")
+            .arg("--extra-ccflags=-fPIC")
+            .arg("--no-werror")
+            .arg(format!(
+                "--host-cpu={}",
+                Triple::from_str(&target)
+                    .expect("TARGET was not a valid target triple")
+                    .architecture
+            ));
+    }
+
+    cmd.arg(format!("--install-dir={}", install_dir.display()))
         .env("PYTHONDONTWRITEBYTECODE", "x");
 
     if profile == "release" {
